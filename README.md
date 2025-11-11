@@ -17,6 +17,7 @@ Guide to set up DeepStream `pyds` and run an RTSP pipeline in Python.
 - [Initialize Submodules](#initialize-submodules)
 - [Build & Install gst-python](#build--install-gst-python)
 - [Edit C++ files](#edit-c-files)
+- [Additional required fixes](#additional-required-fixed)
 - [Edit CMakeLists.txt](#edit-cmakelists-txt)
 - [Compiling the bindings](#compiling-the-bindings)
 - [Verify](#verify)
@@ -98,7 +99,7 @@ sudo ninja install
 ---
 
 ## Edit C++ files
-Make the following **source additions** to enable Smart Recording–related types and helpers.
+Make the following **source additions** to enable Smart Recording–related types and helpers. This files are already ready to use in the folder `bindings`, so you can just replace the files.
 
 ### File: `bindings/src/bindfunctions.cpp`
 Paste these inside the existing `namespace pydeepstream { ... }` where other `m.def(...)` calls live.
@@ -196,9 +197,28 @@ py::class_<SRUserContext>(m, "SRUserContext")
 > Keep all of the above inside `namespace pydeepstream { ... }`.
 
 ---
+### Additional required fixed
+Some builds fail around the `STRING_CHAR_ARRAY` helper used for fixed-size `char[]` fields.
+**File:** `bindings/src/utils.hpp` **-- macro for fixed-size** `char[]`
+Replace the existing macro with:
+```cpp
+#ifndef STRING_CHAR_ARRAY
+#define STRING_CHAR_ARRAY(Type, member)                                             \
+    [](Type &self) -> std::string {                                                 \
+        return std::string(self.member);                                            \
+    },                                                                              \
+    [](Type &self, const std::string &v) {                                          \
+        std::snprintf(self.member, sizeof(self.member), "%s", v.c_str());           \
+        self.member[sizeof(self.member) - 1] = '\0';                                \
+    }
+#endif
+```cpp
+#include <cstdio>   // for std::snprintf
+```
 
+---
 ## Edit CMakeLists txt
-Update the build system to target **CMake 3.10**, **Python 3.10**, and (optionally) a versioned DeepStream path.
+Update the build system to target the version  you need e.g. **CMake 3.10**, **Python 3.10**, and (optionally) a versioned DeepStream path.
 
 **Require CMake 3.10 (was 3.12)**
 ~~~cmake
