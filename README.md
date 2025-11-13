@@ -25,6 +25,7 @@ Depeding of the version you are trying to install
 - [Compiling the bindings](#compiling-the-bindings)
 - [Verify](#verify)
 - [Troubleshooting](#troubleshooting)
+- [Credits / Acknowledgements](#credits--acknowledgements)
 
 ---
 
@@ -65,6 +66,7 @@ python3 -m pip install build
 
 ## Clone in the Correct Location
 DeepStream expects the Python apps under `sources/`. **NOTICE THAT** `X.X` **IS YOUR DEEPSTREAM VERSION**, please edit according your version (e.g `7.1`,`8.0`)
+
 ~~~bash
 export DS_ROOT=/opt/nvidia/deepstream/deepstream-X.X
 sudo mkdir -p "$DS_ROOT/sources"
@@ -382,6 +384,17 @@ wheels/<package>/<version>/
 - Short compatibility section in the PR description.
 
 Thanks for sharing your builds—your contribution helps the whole community install reliably without rebuilding! 🙌
+
+## Credits / Acknowledgements
+
+This repository’s Smart Video Record support for DeepStream Python bindings is heavily inspired by
+the patch and example shared by **@fanzh** on the NVIDIA Developer Forums:
+
+- DeepStream SDK FAQ – “[Use nvurisrcbin plugin to do smart record in Python]”  
+  https://forums.developer.nvidia.com/t/deepstream-sdk-faq/80236/41
+
+The C++/Python changes to enable Smart Record (`NvDsSRRecordingInfo`, `SRUserContext`,
+`get_native_ptr`, and the `nvurisrcbin` usage pattern) are adapted from that post.
 
 
 
